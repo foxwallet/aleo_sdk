@@ -24,47 +24,47 @@ doctest = false
 [dependencies.snarkvm-circuit-network]
 version = "0.16.19"
 git = "https://github.com/AleoNet/snarkVM.git"
-rev = "be171ce0720544c2bc51e27e1674a62fff585adc"
+rev = "02994a1e34e7db8da6c27587537b165aa488868c"
 
 [dependencies.snarkvm-console]
 version = "0.16.19"
 git = "https://github.com/AleoNet/snarkVM.git"
-rev = "be171ce0720544c2bc51e27e1674a62fff585adc"
+rev = "02994a1e34e7db8da6c27587537b165aa488868c"
 features = [ "wasm" ]
 
 [dependencies.snarkvm-ledger-block]
 version = "0.16.19"
 git = "https://github.com/AleoNet/snarkVM.git"
-rev = "be171ce0720544c2bc51e27e1674a62fff585adc"
+rev = "02994a1e34e7db8da6c27587537b165aa488868c"
 features = [ "wasm" ]
 
 [dependencies.snarkvm-ledger-query]
 version = "0.16.19"
 git = "https://github.com/AleoNet/snarkVM.git"
-rev = "be171ce0720544c2bc51e27e1674a62fff585adc"
+rev = "02994a1e34e7db8da6c27587537b165aa488868c"
 features = [ "async", "wasm" ]
 
 [dependencies.snarkvm-ledger-store]
 version = "0.16.19"
 git = "https://github.com/AleoNet/snarkVM.git"
-rev = "be171ce0720544c2bc51e27e1674a62fff585adc"
+rev = "02994a1e34e7db8da6c27587537b165aa488868c"
 
 [dependencies.snarkvm-parameters]
 version = "0.16.19"
 git = "https://github.com/AleoNet/snarkVM.git"
-rev = "be171ce0720544c2bc51e27e1674a62fff585adc"
+rev = "02994a1e34e7db8da6c27587537b165aa488868c"
 features = [ "wasm" ]
 
 [dependencies.snarkvm-synthesizer]
 version = "0.16.19"
 git = "https://github.com/AleoNet/snarkVM.git"
-rev = "be171ce0720544c2bc51e27e1674a62fff585adc"
+rev = "02994a1e34e7db8da6c27587537b165aa488868c"
 features = [ "async", "wasm" ]
 
 [dependencies.snarkvm-wasm]
 version = "0.16.19"
 git = "https://github.com/AleoNet/snarkVM.git"
-rev = "be171ce0720544c2bc51e27e1674a62fff585adc"
+rev = "02994a1e34e7db8da6c27587537b165aa488868c"
 features = [ "console", "fields", "utilities" ]
 
 [dependencies.anyhow]
