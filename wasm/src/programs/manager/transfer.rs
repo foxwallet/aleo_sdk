@@ -17,14 +17,14 @@
 use super::*;
 
 use crate::{
-    OfflineQuery,
-    PrivateKey,
-    RecordPlaintext,
-    Transaction,
     execute_fee,
     execute_program,
     log,
     process_inputs,
+    OfflineQuery,
+    PrivateKey,
+    RecordPlaintext,
+    Transaction,
 };
 
 use crate::types::native::{
@@ -35,7 +35,7 @@ use crate::types::native::{
     RecordPlaintextNative,
     TransactionNative,
 };
-use rand::{SeedableRng, rngs::StdRng};
+use rand::{rngs::StdRng, SeedableRng};
 use std::{ops::Add, str::FromStr};
 use wasm_bindgen::JsValue;
 
@@ -192,6 +192,8 @@ impl ProgramManager {
             private_key,
             fee_record,
             fee_microcredits,
+            // ----- Modified by FoxWallet -----
+            0u64,
             node_url,
             fee_proving_key,
             fee_verifying_key,

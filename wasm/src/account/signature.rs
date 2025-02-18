@@ -14,8 +14,8 @@
 // You should have received a copy of the GNU General Public License
 // along with the Aleo SDK library. If not, see <https://www.gnu.org/licenses/>.
 
-use crate::{Address, PrivateKey, Scalar, types::native::SignatureNative};
-
+use crate::types::native::{SignatureNative, ToBytes};
+use crate::{Address, PrivateKey, Scalar};
 use core::{fmt, ops::Deref, str::FromStr};
 use rand::{SeedableRng, rngs::StdRng};
 use wasm_bindgen::prelude::*;
@@ -75,6 +75,11 @@ impl Signature {
     #[allow(clippy::inherent_to_string_shadow_display)]
     pub fn to_string(&self) -> String {
         self.0.to_string()
+    }
+
+    /// ----- Modified by FoxWallet -----
+    pub fn to_hex(&self) -> String {
+        hex::encode(self.0.to_bytes_le().unwrap())
     }
 }
 

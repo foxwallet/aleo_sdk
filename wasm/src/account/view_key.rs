@@ -17,7 +17,11 @@
 use super::{Address, PrivateKey};
 use crate::record::RecordCiphertext;
 
-use crate::{Scalar, types::native::ViewKeyNative};
+use crate::types::Field;
+use crate::{
+    Scalar,
+    types::native::{GraphKeyNative, ViewKeyNative},
+};
 use core::{convert::TryFrom, fmt, ops::Deref, str::FromStr};
 use wasm_bindgen::prelude::*;
 
@@ -73,6 +77,18 @@ impl ViewKey {
             Ok(plaintext) => Ok(plaintext.to_string()),
             Err(error) => Err(error),
         }
+    }
+
+    /// ----- Modified by FoxWallet -----
+    #[wasm_bindgen(js_name = skTag)]
+    pub fn sk_tag(&self) -> Result<Field, String> {
+        let graph_key = GraphKeyNative::try_from(self.0).map_err(|error| error.to_string()).unwrap();
+        Ok(Field::from(graph_key.sk_tag()))
+    }
+
+    /// ----- Modified by FoxWallet -----
+    pub fn clone(&self) -> Self {
+        Self(self.0.clone())
     }
 }
 

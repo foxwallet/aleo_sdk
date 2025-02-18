@@ -19,21 +19,10 @@ pub use super::networks::*;
 pub use snarkvm_console::{
     account::{Address, ComputeKey, GraphKey, PrivateKey, Signature, ViewKey},
     network::Network,
+    prelude::Itertools,
     program::{
-        Argument,
-        Ciphertext,
-        Entry,
-        EntryType,
-        Future,
-        Identifier,
-        Literal,
-        Plaintext,
-        PlaintextType,
-        ProgramID,
-        ProgramOwner,
-        Record,
-        Response,
-        ValueType,
+        Argument, Ciphertext, Entry, EntryType, Future, Identifier, Literal, Plaintext, PlaintextType, ProgramID,
+        ProgramOwner, Record, RecordType, Response, StructType, Value, ValueType,
     },
     types::{Field, Group, Scalar, U64},
 };
@@ -41,8 +30,7 @@ use snarkvm_ledger_block::{Execution, Input, Output, Transaction, Transition};
 pub use snarkvm_ledger_query::Query;
 pub use snarkvm_ledger_store::helpers::memory::BlockMemory;
 pub use snarkvm_synthesizer::{
-    Process,
-    Program,
+    Process, Program,
     process::{cost_in_microcredits_v2, deployment_cost},
     snark::{ProvingKey, VerifyingKey},
 };
@@ -92,3 +80,12 @@ pub type ResponseNative = Response<CurrentNetwork>;
 pub type TransactionNative = Transaction<CurrentNetwork>;
 pub type TransitionNative = Transition<CurrentNetwork>;
 pub type VerifyingKeyNative = VerifyingKey<CurrentNetwork>;
+
+/// ----- Modified by FoxWallet -----
+pub type ValueNative = Value<CurrentNetwork>;
+pub type PlaintextTypeNative = PlaintextType<CurrentNetwork>;
+pub type EntryTypeNative = EntryType<CurrentNetwork>;
+pub type RecordTypeNative = RecordType<CurrentNetwork>;
+pub type StructTypeNative = StructType<CurrentNetwork>;
+
+pub use indexmap::IndexMap;

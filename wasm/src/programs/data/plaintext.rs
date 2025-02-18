@@ -24,6 +24,7 @@ use crate::{
 };
 use std::ops::Deref;
 
+use serde_json::{Value, json};
 use js_sys::Uint8Array;
 use std::str::FromStr;
 use wasm_bindgen::{JsValue, prelude::wasm_bindgen};
@@ -86,6 +87,50 @@ impl Plaintext {
     pub fn from_string(plaintext: &str) -> Result<Plaintext, String> {
         Ok(Self(PlaintextNative::from_str(plaintext).map_err(|e| e.to_string())?))
     }
+
+    /// ----- Modified by FoxWallet -----
+    #[wasm_bindgen(js_name = toJSON)]
+    pub fn to_json(&self) -> String {
+        fn aleo_parse_plaintext(plaintext: &PlaintextNative) -> serde_json::Value {
+            match plaintext {
+                PlaintextNative::Literal(literal, ..) => serde_json::Value::String(format!("{}", literal)),
+                PlaintextNative::Struct(struct_, ..) => {
+                    let mut map = serde_json::value::Map::new();
+                    let _ = struct_.iter().enumerate().try_for_each(|(_i, (name, plaintext))| {
+                        match plaintext {
+                            PlaintextNative::Literal(literal, ..) => {
+                                map.insert(name.to_string(), serde_json::Value::String(format!("{}", literal)));
+                            }
+                            PlaintextNative::Struct(..) | PlaintextNative::Array(..) => {
+                                map.insert(name.to_string(), aleo_parse_plaintext(&plaintext.clone()));
+                            }
+                        }
+                        Ok::<(), String>(())
+                    });
+                    Value::Object(map)
+                }
+                PlaintextNative::Array(array, ..) => {
+                    let mut res: Vec<serde_json::Value> = vec![];
+                    let _ = array.iter().enumerate().try_for_each(|(_i, plaintext)| {
+                        match plaintext {
+                            PlaintextNative::Literal(literal, ..) => {
+                                res.push(serde_json::Value::String(format!("{}", literal)));
+                            }
+                            PlaintextNative::Struct(..) | PlaintextNative::Array(..) => {
+                                res.push(aleo_parse_plaintext(&plaintext.clone()));
+                            }
+                        }
+                        Ok::<(), String>(())
+                    });
+                    Value::Array(res)
+                }
+            }
+        }
+
+        let res = aleo_parse_plaintext(&self.0);
+        json!(res).to_string()
+    }
+
 
     /// Get a plaintext object from a series of bytes.
     ///

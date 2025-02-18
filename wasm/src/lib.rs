@@ -167,6 +167,10 @@ pub use record::*;
 pub mod types;
 pub use types::{Field, Group, Scalar};
 
+/// ----- Modified by FoxWallet -----
+pub mod foxwallet;
+pub use foxwallet::*;
+
 #[cfg(not(test))]
 mod thread_pool;
 

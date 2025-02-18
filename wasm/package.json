@@ -7,11 +7,11 @@
   ],
   "license": "GPL-3.0",
   "type": "module",
-  "main": "./dist/testnet/index.js",
-  "browser": "./dist/testnet/index.js",
-  "types": "./dist/testnet/index.d.ts",
+  "main": "./dist/mainnet/index.js",
+  "browser": "./dist/mainnet/index.js",
+  "types": "./dist/mainnet/index.d.ts",
   "exports": {
-    ".": "./dist/testnet/index.js",
+    ".": "./dist/mainnet/index.js",
     "./worker.js": "./dist/testnet/worker.js",
     "./testnet.js": "./dist/testnet/index.js",
     "./testnet/worker.js": "./dist/testnet/worker.js",
@@ -38,7 +38,12 @@
   },
   "homepage": "https://github.com/ProvableHQ/sdk#readme",
   "scripts": {
-    "build": "rimraf dist && node build.js",
+    "build:mainnet": "yarn clean && node scripts/wasmpack.js mainnet",
+    "build:testnet": "yarn clean && node scripts/wasmpack.js testnet",
+    "build:networks": "yarn build:mainnet && yarn build:testnet",
+    "build:wasm": "yarn clean && rimraf dist && node build.js && node ./scripts/copywasm.js",
+    "build:all": "yarn build:networks && yarn build:wasm",
+    "clean": "rimraf pkg && rimraf target",
     "test": "node test.js"
   },
   "devDependencies": {
