@@ -1,36 +1,42 @@
-// Copyright (C) 2019-2023 Aleo Systems Inc.
-// This file is part of the Aleo SDK library.
+// Copyright (C) 2019-2025 Provable Inc.
+// This file is part of the Provable SDK library.
 
-// The Aleo SDK library is free software: you can redistribute it and/or modify
+// The Provable SDK library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 
-// The Aleo SDK library is distributed in the hope that it will be useful,
+// The Provable SDK library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details.
 
 // You should have received a copy of the GNU General Public License
-// along with the Aleo SDK library. If not, see <https://www.gnu.org/licenses/>.
+// along with the Provable SDK library. If not, see <https://www.gnu.org/licenses/>.
 
 use super::*;
 
 use crate::{
     ExecutionResponse, OfflineQuery, PrivateKey, RecordPlaintext, Transaction, execute_fee, execute_program, log,
     process_inputs,
+    types::native::{
+        CurrentAleo,
+        CurrentNetwork,
+        IdentifierNative,
+        ProcessNative,
+        ProgramNative,
+        RecordPlaintextNative,
+        TransactionNative,
+    },
 };
+use snarkvm_algorithms::snark::varuna::VarunaVersion;
+use snarkvm_console::network::{ConsensusVersion, Network};
+use snarkvm_ledger_query::QueryTrait;
+use snarkvm_synthesizer::prelude::cost_in_microcredits_v1;
 
-use crate::types::native::{
-    CurrentAleo, CurrentNetwork, IdentifierNative, ProcessNative, ProgramNative, RecordPlaintextNative,
-    TransactionNative,
-};
 use core::ops::Add;
 use js_sys::{Array, Object};
 use rand::{SeedableRng, rngs::StdRng};
-use snarkvm_console::prelude::Network;
-use snarkvm_ledger_query::QueryTrait;
-use snarkvm_synthesizer::prelude::cost_in_microcredits_v1;
 use std::str::FromStr;
 
 #[wasm_bindgen]
@@ -102,7 +108,8 @@ impl ProgramManager {
 
             log("Proving execution");
             let locator = program_native.id().to_string().add("/").add(function);
-            let execution = trace.prove_execution::<CurrentAleo, _>(&locator, rng).map_err(|e| e.to_string())?;
+            let execution =
+                trace.prove_execution::<CurrentAleo, _>(&locator, VarunaVersion::V2, rng).map_err(|e| e.to_string())?;
             ExecutionResponse::new(Some(execution), function, response, process, program)?
         } else {
             ExecutionResponse::new(None, function, response, process, program)?
@@ -194,7 +201,7 @@ impl ProgramManager {
         let program = ProgramNative::from_str(program).map_err(|err| err.to_string())?;
         let locator = program.id().to_string().add("/").add(function);
         let execution = trace
-            .prove_execution::<CurrentAleo, _>(&locator, &mut StdRng::from_entropy())
+            .prove_execution::<CurrentAleo, _>(&locator, VarunaVersion::V2, &mut StdRng::from_entropy())
             .map_err(|e| e.to_string())?;
         let execution_id = execution.to_execution_id().map_err(|e| e.to_string())?;
 
@@ -215,7 +222,7 @@ impl ProgramManager {
         );
 
         // Verify the execution
-        process.verify_execution(&execution).map_err(|err| err.to_string())?;
+        process.verify_execution(VarunaVersion::V2, &execution).map_err(|err| err.to_string())?;
 
         log("Creating execution transaction");
         let transaction = TransactionNative::from_execution(execution, Some(fee)).map_err(|err| err.to_string())?;
@@ -292,7 +299,8 @@ impl ProgramManager {
             trace.prepare_async(query).await.map_err(|err| err.to_string())?;
             block_height
         };
-        let execution = trace.prove_execution::<CurrentAleo, _>(&locator, rng).map_err(|e| e.to_string())?;
+        let execution =
+            trace.prove_execution::<CurrentAleo, _>(&locator, VarunaVersion::V2, rng).map_err(|e| e.to_string())?;
 
         // Get the storage cost in bytes for the program execution
         log("Estimating cost");
@@ -308,7 +316,7 @@ impl ProgramManager {
             let stack = process.get_stack(program_id).map_err(|e| e.to_string())?;
 
             // Calculate the finalize cost for the function identified in the transition
-            let cost = if block_height >= CurrentNetwork::CONSENSUS_V2_HEIGHT {
+            let cost = if block_height >= CurrentNetwork::CONSENSUS_HEIGHT(ConsensusVersion::V2).unwrap() {
                 cost_in_microcredits_v2(stack, function_name).map_err(|e| e.to_string())?
             } else {
                 cost_in_microcredits_v1(stack, function_name).map_err(|e| e.to_string())?

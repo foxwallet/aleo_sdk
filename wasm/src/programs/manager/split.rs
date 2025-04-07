@@ -1,26 +1,34 @@
-// Copyright (C) 2019-2023 Aleo Systems Inc.
-// This file is part of the Aleo SDK library.
+// Copyright (C) 2019-2025 Provable Inc.
+// This file is part of the Provable SDK library.
 
-// The Aleo SDK library is free software: you can redistribute it and/or modify
+// The Provable SDK library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 
-// The Aleo SDK library is distributed in the hope that it will be useful,
+// The Provable SDK library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details.
 
 // You should have received a copy of the GNU General Public License
-// along with the Aleo SDK library. If not, see <https://www.gnu.org/licenses/>.
+// along with the Provable SDK library. If not, see <https://www.gnu.org/licenses/>.
 
 use super::*;
 
-use crate::{execute_program, log, process_inputs, OfflineQuery, PrivateKey, RecordPlaintext, Transaction};
-
-use crate::types::native::{CurrentAleo, IdentifierNative, ProcessNative, ProgramNative, TransactionNative};
+use crate::{
+    OfflineQuery,
+    PrivateKey,
+    RecordPlaintext,
+    Transaction,
+    execute_program,
+    log,
+    process_inputs,
+    types::native::{CurrentAleo, IdentifierNative, ProcessNative, ProgramNative, TransactionNative},
+};
 use js_sys::Array;
-use rand::{rngs::StdRng, SeedableRng};
+use rand::{SeedableRng, rngs::StdRng};
+use snarkvm_algorithms::snark::varuna::VarunaVersion;
 use std::{ops::Add, str::FromStr};
 
 #[wasm_bindgen]
@@ -81,11 +89,12 @@ impl ProgramManager {
         }
 
         log("Proving the split execution");
-        let execution =
-            trace.prove_execution::<CurrentAleo, _>("credits.aleo/split", rng).map_err(|e| e.to_string())?;
+        let execution = trace
+            .prove_execution::<CurrentAleo, _>("credits.aleo/split", VarunaVersion::V2, rng)
+            .map_err(|e| e.to_string())?;
 
         log("Verifying the split execution");
-        process.verify_execution(&execution).map_err(|err| err.to_string())?;
+        process.verify_execution(VarunaVersion::V2, &execution).map_err(|err| err.to_string())?;
 
         log("Creating execution transaction for split");
         let transaction = TransactionNative::from_execution(execution, None).map_err(|err| err.to_string())?;

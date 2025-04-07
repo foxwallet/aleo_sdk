@@ -1,5 +1,6 @@
 import {
   Address,
+  ComputeKey,
   PrivateKey,
   Signature,
   ViewKey,
@@ -44,6 +45,7 @@ interface AccountParam {
 export class Account {
   _privateKey: PrivateKey;
   _viewKey: ViewKey;
+  _computeKey: ComputeKey;
   _address: Address;
 
   constructor(params: AccountParam = {}) {
@@ -54,6 +56,7 @@ export class Account {
       throw new Error("Wrong Parameter");
     }
     this._viewKey = ViewKey.from_private_key(this._privateKey);
+    this._computeKey = ComputeKey.from_private_key(this._privateKey);
     this._address = Address.from_private_key(this._privateKey);
   }
 
@@ -65,7 +68,7 @@ export class Account {
    *
    * @example
    * const ciphertext = PrivateKey.newEncrypted("password");
-   * const account = Account.fromCiphertext(ciphertext, "password");
+   * const account = Account.fromCiphertext(process.env.ciphertext, process.env.password);
    */
   public static fromCiphertext(ciphertext: PrivateKeyCiphertext | string, password: string) {
     try {
@@ -95,8 +98,16 @@ export class Account {
     return this._viewKey;
   }
 
+  computeKey() {
+    return this._computeKey;
+  }
+
   address() {
     return this._address;
+  }
+
+  clone() {
+    return new Account({ privateKey: this._privateKey.to_string() });
   }
 
   toString() {
@@ -150,7 +161,7 @@ export class Account {
    * @example
    * // Create a connection to the Aleo network and an account
    * const connection = new AleoNetworkClient("https://api.explorer.provable.com/v1");
-   * const account = Account.fromCiphertext("ciphertext", "password");
+   * const account = Account.fromCiphertext(process.env.ciphertext, process.env.password);
    *
    * // Get a record from the network
    * const record = connection.getBlock(1234);

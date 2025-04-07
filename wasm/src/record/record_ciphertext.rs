@@ -1,21 +1,31 @@
-// Copyright (C) 2019-2023 Aleo Systems Inc.
-// This file is part of the Aleo SDK library.
+// Copyright (C) 2019-2025 Provable Inc.
+// This file is part of the Provable SDK library.
 
-// The Aleo SDK library is free software: you can redistribute it and/or modify
+// The Provable SDK library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 
-// The Aleo SDK library is distributed in the hope that it will be useful,
+// The Provable SDK library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details.
 
 // You should have received a copy of the GNU General Public License
-// along with the Aleo SDK library. If not, see <https://www.gnu.org/licenses/>.
+// along with the Provable SDK library. If not, see <https://www.gnu.org/licenses/>.
 
-use crate::{Field, GraphKey, RecordPlaintext, ViewKey, types::native::RecordCiphertextNative};
+use crate::{
+    Field,
+    GraphKey,
+    RecordPlaintext,
+    ViewKey,
+    js_array_from_fields,
+    to_bits_array_le,
+    types::native::RecordCiphertextNative,
+};
+use snarkvm_console::prelude::{FromBytes, ToBits, ToBytes, ToFields};
 
+use js_sys::{Array, Uint8Array};
 use std::{ops::Deref, str::FromStr};
 use wasm_bindgen::prelude::*;
 
@@ -72,6 +82,40 @@ impl RecordCiphertext {
     /// @returns {Field} tag of the record.
     pub fn tag(graph_key: &GraphKey, commitment: Field) -> Result<Field, String> {
         RecordCiphertextNative::tag(*graph_key.sk_tag(), *commitment).map_err(|e| e.to_string()).map(Field::from)
+    }
+
+    /// Get a record ciphertext object from a series of bytes.
+    ///
+    /// @param {Uint8Array} bytes A left endian byte array representing the record ciphertext.
+    ///
+    /// @returns {RecordCiphertext}
+    #[wasm_bindgen(js_name = "fromBytesLe")]
+    pub fn from_bytes_le(bytes: Uint8Array) -> Result<Self, String> {
+        let rust_bytes = bytes.to_vec();
+        let native = RecordCiphertextNative::from_bytes_le(&rust_bytes).map_err(|e| e.to_string())?;
+        Ok(Self(native))
+    }
+
+    /// Get the left endian byte array representation of the record ciphertext.
+    #[wasm_bindgen(js_name = "toBytesLe")]
+    pub fn to_bytes_le(&self) -> Result<Uint8Array, String> {
+        let bytes_vec = self.0.to_bytes_le().map_err(|e| e.to_string())?;
+        let bytes = bytes_vec.as_slice();
+        Uint8Array::try_from(bytes).map_err(|e| e.to_string())
+    }
+
+    /// Get the left endian boolean array representation of the record ciphertext bits.
+    #[wasm_bindgen(js_name = "toBitsLe")]
+    pub fn to_bits_le(&self) -> Array {
+        to_bits_array_le!(self)
+    }
+
+    /// Get the field array representation of the record ciphertext.
+    #[wasm_bindgen(js_name = "toFields")]
+    pub fn to_fields(&self) -> Result<Array, String> {
+        let native = self.0.clone();
+        let native_fields = native.to_fields().map_err(|e| e.to_string())?;
+        Ok(js_array_from_fields!(&native_fields))
     }
 }
 

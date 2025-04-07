@@ -1,6 +1,6 @@
 {
   "name": "@provablehq/sdk",
-  "version": "0.8.0",
+  "version": "0.8.7",
   "description": "A Software Development Kit (SDK) for Zero-Knowledge Transactions",
   "collaborators": [
     "The Provable Team"
@@ -47,11 +47,12 @@
   },
   "homepage": "https://github.com/ProvableHQ/sdk#readme",
   "dependencies": {
-    "@provablehq/wasm": "^0.8.0",
+    "@provablehq/wasm": "^0.8.7",
     "comlink": "^4.4.2",
     "core-js": "^3.40.0",
     "mime": "^4.0.6",
-    "sync-request": "^6.1.0"
+    "sync-request": "^6.1.0",
+    "xmlhttprequest-ssl": "^3.1.0"
   },
   "devDependencies": {
     "@rollup/plugin-replace": "^6.0.2",
@@ -69,6 +70,7 @@
     "eslint-plugin-import": "^2.31.0",
     "glob": "^11.0.1",
     "jsdoc": "^4.0.4",
+    "kis-jsdoc-plugin": "^2.2.1",
     "mocha": "^11.1.0",
     "prettier": "3.4.2",
     "rimraf": "^6.0.1",
