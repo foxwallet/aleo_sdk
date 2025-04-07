@@ -17,6 +17,10 @@
 use super::*;
 
 use crate::{
+    OfflineQuery,
+    PrivateKey,
+    RecordPlaintext,
+    Transaction,
     execute_fee,
     execute_program,
     log,

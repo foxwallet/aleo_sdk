@@ -88,11 +88,6 @@ impl Field {
         Field(self.0.clone())
     }
 
-    /// ----- Modified by FoxWallet -----
-    pub fn clone(&self) -> Self {
-        Self(self.0.clone())
-    }
-
     /// Generate a random field element.
     pub fn random() -> Field {
         let rng = &mut rand::thread_rng();
